@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-field, undefined-global
 local FRAME_WIDTH = 400
 local ROW_HEIGHT = 32   -- How tall is each row?
 local MAX_ROWS = 10      -- How many rows can be shown at once?
@@ -111,11 +112,11 @@ function AutoOpenAnything:AutoOpenContainers()
     and not AutoOpenAnything.merchantShown and not AutoOpenAnything.adventureMapShown then
         --DEFAULT_CHAT_FRAME:AddMessage("AutoOpenAnything:AutoOpenContainers()")
         for bag = 0, 4 do
-            for slot = 0, GetContainerNumSlots(bag) do
-                local id = GetContainerItemID(bag, slot)
+            for slot = 0, C_Container.GetContainerNumSlots(bag) do
+                local id = C_Container.GetContainerItemID(bag, slot)
                 if id and AutoOpenAnything.allContainerItemIdsTable[id] and AutoOpenAnything.db.char[dbVersion].blacklist[id] == nil
                 and (AutoOpenAnything.allLockedContainerItemIdsTable[id] == nil or not AutoOpenAnything.db.char[dbVersion].dontOpenLocked) then
-                    UseContainerItem(bag, slot)
+                    C_Container.UseContainerItem(bag, slot)
                     if AutoOpenAnything.db.char[dbVersion].notifyInChat or showDebugOutput then
                         DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00Opening : " .. GetContainerItemLink(bag, slot) .. " ID: " .. GetContainerItemID(bag, slot))
                     end
@@ -214,7 +215,7 @@ function AutoOpenAnything.ShowMainFrame()
         edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border", edgeSize = 16,
         insets = { left = 4, right = 4, top = 4, bottom = 4 },
     })
-    local title = titlebar:CreateFontString("ARTWORK", "$parentItemInfo")
+    local title = titlebar:CreateFontString(nil,"ARTWORK", "GameFontNormal") -- parentItemInfo
     title:SetWidth(titlebar:GetWidth() - MARGIN * 2 - 24)
     title:SetHeight(titlebar:GetHeight())
     title:SetJustifyH("LEFT")
@@ -248,7 +249,8 @@ function AutoOpenAnything.ShowMainFrame()
     lockedCheckboxFrame:SetSize(frame:GetWidth() - SEARCH_BAR_WIDTH - 50, TITLE_BAR_HEIGHT)
     lockedCheckboxFrame:SetPoint("TOPRIGHT", 0, -TITLE_BAR_HEIGHT)
     lockedCheckboxFrame:SetScript("OnClick", AutoOpenAnything.OnLockedCheckboxClick)
-    local label = lockedCheckboxFrame:CreateFontString("ARTWORK", "AutoOpenAnythingCombatCheckboxFrame")
+
+    local label = lockedCheckboxFrame:CreateFontString(nil, "ARTWORK", "GameTooltipText") --AutoOpenAnythingCombatCheckboxFrame
     label:SetWidth(lockedCheckboxFrame:GetWidth() - MARGIN * 2 - 24)
     label:SetHeight(lockedCheckboxFrame:GetHeight())
     label:SetJustifyH("LEFT")
@@ -257,7 +259,10 @@ function AutoOpenAnything.ShowMainFrame()
     label:SetFont(GameFontNormal:GetFont(), 12)
     label:SetText("Ignore locked containers")
     label:SetTextColor(0, 0, 0)
-    local checked = CreateFrame("CheckButton", "AutoOpenAnythingLockedCheckbox", lockedCheckboxFrame, "InterfaceOptionsSmallCheckButtonTemplate")
+
+
+    local checked = CreateFrame("CheckButton", "AutoOpenAnythingLockedCheckbox", lockedCheckboxFrame, "ChatConfigCheckButtonTemplate") -- "InterfaceOptionsSmallCheckButtonTemplate"
+
     checked:SetScript("OnClick", AutoOpenAnything.OnLockedCheckboxClick)
     checked:SetWidth(24)
     checked:SetHeight(24)
@@ -270,7 +275,8 @@ function AutoOpenAnything.ShowMainFrame()
     combatCheckboxFrame:SetSize(frame:GetWidth() - SEARCH_BAR_WIDTH - 50, TITLE_BAR_HEIGHT)
     combatCheckboxFrame:SetPoint("TOPRIGHT", 0, -TITLE_BAR_HEIGHT*2)
     combatCheckboxFrame:SetScript("OnClick", AutoOpenAnything.OnCombatCheckboxClick)
-    local label = combatCheckboxFrame:CreateFontString("ARTWORK", "AutoOpenAnythingCombatCheckboxFrame")
+
+    local label = combatCheckboxFrame:CreateFontString(nil, "ARTWORK", "GameTooltipText") --AutoOpenAnythingCombatCheckboxFrame
     label:SetWidth(combatCheckboxFrame:GetWidth() - MARGIN * 2 - 24)
     label:SetHeight(combatCheckboxFrame:GetHeight())
     label:SetJustifyH("LEFT")
@@ -279,7 +285,8 @@ function AutoOpenAnything.ShowMainFrame()
     label:SetFont(GameFontNormal:GetFont(), 12)
     label:SetText("Only open after combat")
     label:SetTextColor(0, 0, 0)
-    local checked = CreateFrame("CheckButton", "AutoOpenAnythingCombatCheckbox", combatCheckboxFrame, "InterfaceOptionsSmallCheckButtonTemplate")
+
+    local checked = CreateFrame("CheckButton", "AutoOpenAnythingCombatCheckbox", combatCheckboxFrame, "ChatConfigCheckButtonTemplate" ) --InterfaceOptionsSmallCheckButtonTemplate
     checked:SetScript("OnClick", AutoOpenAnything.OnCombatCheckboxClick)
     checked:SetWidth(24)
     checked:SetHeight(24)
@@ -292,7 +299,8 @@ function AutoOpenAnything.ShowMainFrame()
     notifyCheckboxFrame:SetSize(frame:GetWidth() - SEARCH_BAR_WIDTH - 50, TITLE_BAR_HEIGHT)
     notifyCheckboxFrame:SetPoint("TOPRIGHT", 0, -TITLE_BAR_HEIGHT*3)
     notifyCheckboxFrame:SetScript("OnClick", AutoOpenAnything.OnNotifyCheckboxClick)
-    local label = notifyCheckboxFrame:CreateFontString("ARTWORK", "AutoOpenAnythingNotifyCheckboxFrame")
+
+    local label = notifyCheckboxFrame:CreateFontString(nil, "ARTWORK", "GameTooltipText") --AutoOpenAnythingNotifyCheckboxFrame
     label:SetWidth(notifyCheckboxFrame:GetWidth() - MARGIN * 2 - 24)
     label:SetHeight(notifyCheckboxFrame:GetHeight())
     label:SetJustifyH("LEFT")
@@ -301,7 +309,7 @@ function AutoOpenAnything.ShowMainFrame()
     label:SetFont(GameFontNormal:GetFont(), 12)
     label:SetText("Notify in chat")
     label:SetTextColor(0, 0, 0)
-    local checked = CreateFrame("CheckButton", "AutoOpenAnythingNotifyCheckbox", notifyCheckboxFrame, "InterfaceOptionsSmallCheckButtonTemplate")
+    local checked = CreateFrame("CheckButton", "AutoOpenAnythingNotifyCheckbox", notifyCheckboxFrame, "ChatConfigCheckButtonTemplate") --InterfaceOptionsSmallCheckButtonTemplate
     checked:SetScript("OnClick", AutoOpenAnything.OnNotifyCheckboxClick)
     checked:SetWidth(24)
     checked:SetHeight(24)
@@ -314,7 +322,7 @@ function AutoOpenAnything.ShowMainFrame()
     minimapCheckboxFrame:SetSize(frame:GetWidth() - SEARCH_BAR_WIDTH - 50, TITLE_BAR_HEIGHT)
     minimapCheckboxFrame:SetPoint("TOPRIGHT", 0, -TITLE_BAR_HEIGHT*4)
     minimapCheckboxFrame:SetScript("OnClick", AutoOpenAnything.OnMinimapCheckboxClick)
-    local label = minimapCheckboxFrame:CreateFontString("ARTWORK", "AutoOpenAnythingMinimapCheckboxFrame")
+    local label = minimapCheckboxFrame:CreateFontString(nil, "ARTWORK", "GameTooltipText") --AutoOpenAnythingMinimapCheckboxFrame
     label:SetWidth(minimapCheckboxFrame:GetWidth() - MARGIN * 2 - 24)
     label:SetHeight(minimapCheckboxFrame:GetHeight())
     label:SetJustifyH("LEFT")
@@ -323,7 +331,7 @@ function AutoOpenAnything.ShowMainFrame()
     label:SetFont(GameFontNormal:GetFont(), 12)
     label:SetText("Show minimap icon")
     label:SetTextColor(0, 0, 0)
-    local checked = CreateFrame("CheckButton", "AutoOpenAnythingMinimapCheckbox", minimapCheckboxFrame, "InterfaceOptionsSmallCheckButtonTemplate")
+    local checked = CreateFrame("CheckButton", "AutoOpenAnythingMinimapCheckbox", minimapCheckboxFrame, "ChatConfigCheckButtonTemplate") --InterfaceOptionsSmallCheckButtonTemplate
     checked:SetScript("OnClick", AutoOpenAnything.OnMinimapCheckboxClick)
     checked:SetWidth(24)
     checked:SetHeight(24)
@@ -367,6 +375,7 @@ function AutoOpenAnything.ShowMainFrame()
     })
 
     for i=1, 10, 1 do
+
         local button = CreateFrame("Button", "AutoOpenAnythingButtonFrame"..i, buttonGroup)
         button:SetWidth(buttonGroup:GetWidth() - 24)
         button:SetHeight(ROW_HEIGHT)
@@ -375,9 +384,10 @@ function AutoOpenAnything.ShowMainFrame()
         else
             button:SetPoint("TOP", AutoOpenAnything.buttonFrames[i-1], "BOTTOM")
         end
+
         button:RegisterForClicks("LeftButtonUp")
         button:SetScript("OnClick", AutoOpenAnything.OnClick)
-        button:SetScript("OnEnter", AutoOpenAnything.OnEnter)
+        --button:SetScript("OnEnter", AutoOpenAnything.OnEnter)
         button:SetScript("OnLeave", AutoOpenAnything.OnLeave)
 
         local highlight = button:CreateTexture("$parentHighlight", "BACKGROUND") -- better highlight
@@ -390,7 +400,8 @@ function AutoOpenAnything.ShowMainFrame()
         local itemname_fontsize = 15
         local iteminfo_fontsize = 12
 
-        local itemname = button:CreateFontString("ARTWORK", "$parentItemName")
+        local itemname = button:CreateFontString(nil, "ARTWORK", "GameTooltipText") --$parentItemName
+
         button.itemname = itemname
         itemname:SetWidth(buttonGroup:GetWidth()-100)
         itemname:SetFont(GameFontHighlight:GetFont(), itemname_fontsize)
@@ -399,7 +410,7 @@ function AutoOpenAnything.ShowMainFrame()
         itemname:SetJustifyV("TOP")
         itemname:SetWordWrap(false)
 
-        local iteminfo = button:CreateFontString("ARTWORK", "$parentItemInfo")
+        local iteminfo = button:CreateFontString("$parentItemInfo", "ARTWORK", "GameTooltipText") --$parentItemInfo
         button.iteminfo = iteminfo
         iteminfo:SetWidth(buttonGroup:GetWidth()-100)
         iteminfo:SetFont(GameFontNormal:GetFont(), iteminfo_fontsize)
@@ -416,7 +427,9 @@ function AutoOpenAnything.ShowMainFrame()
         icon:SetPoint("LEFT", 0, 0)
         icon:SetTexture("Interface\\Icons\\temp")
 
-        local checked = CreateFrame("CheckButton", "$parentChecked", button, "InterfaceOptionsSmallCheckButtonTemplate")
+        --DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 check5")
+
+        local checked = CreateFrame("CheckButton", "$parentChecked", button, "ChatConfigCheckButtonTemplate") --InterfaceOptionsSmallCheckButtonTemplate
         button.checked = checked
         checked:SetScript("OnClick", AutoOpenAnything.OnCheckboxClick)
         checked:SetWidth(24)
@@ -424,6 +437,7 @@ function AutoOpenAnything.ShowMainFrame()
         checked:SetPoint("RIGHT", -20, 0)
         checked:SetHitRectInsets(0, 0, 0, 0)
         checked:SetChecked(false)
+        --DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 check5")
 
         AutoOpenAnything.buttonFrames[i] = button
     end
@@ -441,12 +455,13 @@ function AutoOpenAnything.MainFrameUpdate()
     else
         numItems = #AutoOpenAnything.searchResults[AutoOpenAnything.searching]
     end
+    --Todo: fix these db lookups
     AutoOpenAnything.lockedCheckbox:SetChecked(AutoOpenAnything.db.char[dbVersion].dontOpenLocked)
     AutoOpenAnything.combatCheckbox:SetChecked(AutoOpenAnything.db.char[dbVersion].onlyOpenAfterCombat)
     AutoOpenAnything.notifyCheckbox:SetChecked(AutoOpenAnything.db.char[dbVersion].notifyInChat)
     AutoOpenAnything.minimapCheckbox:SetChecked(not AutoOpenAnything.db.char[dbVersion].minimap.hide)
 
-    FauxScrollFrame_Update(AutoOpenAnything.scrollbar, numItems, 10, ROW_HEIGHT, nil, nil, nil, nil, nil, nil, 1)
+    FauxScrollFrame_Update(AutoOpenAnything.scrollbar, numItems, 10, ROW_HEIGHT, nil, nil, nil, nil, nil, nil, true)
     local invalidOffset = 0
     for i=1, 10, 1 do
         local offset = i + FauxScrollFrame_GetOffset(AutoOpenAnything.scrollbar)+invalidOffset
