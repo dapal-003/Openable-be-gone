@@ -118,7 +118,7 @@ function AutoOpenAnything:AutoOpenContainers()
                 and (AutoOpenAnything.allLockedContainerItemIdsTable[id] == nil or not AutoOpenAnything.db.char[dbVersion].dontOpenLocked) then
                     C_Container.UseContainerItem(bag, slot)
                     if AutoOpenAnything.db.char[dbVersion].notifyInChat or showDebugOutput then
-                        DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00Opening : " .. GetContainerItemLink(bag, slot) .. " ID: " .. GetContainerItemID(bag, slot))
+                        DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00Opening : " .. C_Container.GetContainerItemLink(bag, slot) .. " ID: " .. C_Container.GetContainerItemID(bag, slot))
                     end
                     return
                 end
