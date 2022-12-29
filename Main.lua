@@ -32,7 +32,7 @@ for index, value in ipairs(AutoOpenAnything.allLockedContainerItemIds) do
     AutoOpenAnything.allLockedContainerItemIdsTable[value] = true
 end
 
-local dbVersion = "0.3"
+local dbVersion = "0.4"
 -- declare defaults to be used in the DB
 local defaults = {
     char = {}
@@ -56,8 +56,8 @@ function AutoOpenAnything:OnInitialize()
     AutoOpenAnything:RegisterChatCommand("aoa", "SlashProcessorFunc")
     AutoOpenAnything:RegisterEvent("BAG_UPDATE_DELAYED")
     AutoOpenAnything:RegisterEvent("PLAYER_REGEN_ENABLED")
-    AutoOpenAnything:RegisterEvent("MERCHANT_SHOW")
-    AutoOpenAnything:RegisterEvent("MERCHANT_CLOSED")
+    -- AutoOpenAnything:RegisterEvent("MERCHANT_SHOW")
+    -- AutoOpenAnything:RegisterEvent("MERCHANT_CLOSED")
     AutoOpenAnything:RegisterEvent("ADVENTURE_MAP_OPEN")
     AutoOpenAnything:RegisterEvent("ADVENTURE_MAP_CLOSE")
 
