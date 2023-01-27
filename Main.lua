@@ -11,25 +11,25 @@ local MARGIN = 12
 
 local showDebugOutput = false
 
-AutoOpenAnything = LibStub("AceAddon-3.0"):NewAddon("AutoOpenAnything", "AceConsole-3.0", "AceEvent-3.0")
-AutoOpenAnything.buttonFrames = {}
-AutoOpenAnything.searching = ""
-AutoOpenAnything.searchResults = {}
-AutoOpenAnything.merchantShown = false
-AutoOpenAnything.adventureMapShown = false
-AutoOpenAnything.tooltip = CreateFrame("GameTooltip", "AutoOpenAnythingTooltip", UIParent, "GameTooltipTemplate")
-AutoOpenAnything.allContainerItemIds = AutoOpenAnythingAllContainerItemIds
+OpenableBeGone = LibStub("AceAddon-3.0"):NewAddon("OpenableBeGone", "AceConsole-3.0", "AceEvent-3.0")
+OpenableBeGone.buttonFrames = {}
+OpenableBeGone.searching = ""
+OpenableBeGone.searchResults = {}
+OpenableBeGone.merchantShown = false
+OpenableBeGone.adventureMapShown = false
+OpenableBeGone.tooltip = CreateFrame("GameTooltip", "OpenableBeGoneTooltip", UIParent, "GameTooltipTemplate")
+OpenableBeGone.allContainerItemIds = OpenableBeGoneAllContainerItemIds
 --read all container itemids and store them in a table for accessibility
-AutoOpenAnything.allContainerItemIdsTable = {}
-for index, value in ipairs(AutoOpenAnything.allContainerItemIds) do
-    AutoOpenAnything.allContainerItemIdsTable[value] = true
+OpenableBeGone.allContainerItemIdsTable = {}
+for index, value in ipairs(OpenableBeGone.allContainerItemIds) do
+    OpenableBeGone.allContainerItemIdsTable[value] = true
 end
-AutoOpenAnything.allContainerItemNames = AutoOpenAnythingAllContainerItemNames
+OpenableBeGone.allContainerItemNames = OpenableBeGoneAllContainerItemNames
 --read all container itemids and store them in a table for accessibility
-AutoOpenAnything.allLockedContainerItemIdsTable = {}
-AutoOpenAnything.allLockedContainerItemIds = AutoOpenAnythingAllLockedContainerItemIds
-for index, value in ipairs(AutoOpenAnything.allLockedContainerItemIds) do
-    AutoOpenAnything.allLockedContainerItemIdsTable[value] = true
+OpenableBeGone.allLockedContainerItemIdsTable = {}
+OpenableBeGone.allLockedContainerItemIds = OpenableBeGoneAllLockedContainerItemIds
+for index, value in ipairs(OpenableBeGone.allLockedContainerItemIds) do
+    OpenableBeGone.allLockedContainerItemIdsTable[value] = true
 end
 
 local dbVersion = "0.4"
@@ -47,77 +47,77 @@ defaults.char[dbVersion] = {
     dontOpenLocked = true
 }
 
-function AutoOpenAnything:OnInitialize()
+function OpenableBeGone:OnInitialize()
     -- Code that you want to run when the addon is first loaded goes here.
-    AutoOpenAnything:Print("DB Version: ", dbVersion)
-    AutoOpenAnything.db = LibStub("AceDB-3.0"):New("AutoOpenAnythingDB", defaults, true)
-    --LibStub("AceConfig-3.0"):RegisterOptionsTable("AutoOpenAnything", options, {"autoopenanything", "aoa"})
-    AutoOpenAnything:RegisterChatCommand("autoopenanything", "SlashProcessorFunc")
-    AutoOpenAnything:RegisterChatCommand("aoa", "SlashProcessorFunc")
-    AutoOpenAnything:RegisterEvent("BAG_UPDATE_DELAYED")
-    AutoOpenAnything:RegisterEvent("PLAYER_REGEN_ENABLED")
-    -- AutoOpenAnything:RegisterEvent("MERCHANT_SHOW")
-    -- AutoOpenAnything:RegisterEvent("MERCHANT_CLOSED")
-    AutoOpenAnything:RegisterEvent("ADVENTURE_MAP_OPEN")
-    AutoOpenAnything:RegisterEvent("ADVENTURE_MAP_CLOSE")
+    OpenableBeGone:Print("DB Version: ", dbVersion)
+    OpenableBeGone.db = LibStub("AceDB-3.0"):New("OpenableBeGoneDB", defaults, true)
+    --LibStub("AceConfig-3.0"):RegisterOptionsTable("OpenableBeGone", options, {"OpenableBeGone", "aoa"})
+    OpenableBeGone:RegisterChatCommand("OpenableBeGone", "SlashProcessorFunc")
+    OpenableBeGone:RegisterChatCommand("obg", "SlashProcessorFunc")
+    OpenableBeGone:RegisterEvent("BAG_UPDATE_DELAYED")
+    OpenableBeGone:RegisterEvent("PLAYER_REGEN_ENABLED")
+    -- OpenableBeGone:RegisterEvent("MERCHANT_SHOW")
+    -- OpenableBeGone:RegisterEvent("MERCHANT_CLOSED")
+    OpenableBeGone:RegisterEvent("ADVENTURE_MAP_OPEN")
+    OpenableBeGone:RegisterEvent("ADVENTURE_MAP_CLOSE")
 
-    local autoOpenAnythingLDB = LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject("AutoOpenAnything", {
+    local OpenableBeGoneLDB = LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject("OpenableBeGone", {
         type = "launcher",
         icon = "Interface\\Icons\\Inv_misc_treasurechest04b",
         OnClick = function(clickedframe, button)
             --DEFAULT_CHAT_FRAME:AddMessage("Minimap icon clicked")
             if IsShiftKeyDown() then
-                AutoOpenAnything.db.char[dbVersion].minimap.hide = true
-                AutoOpenAnything:UpdateMinimapIcon()
-                AutoOpenAnything.MainFrameUpdate()
-    		elseif AutoOpenAnything.mainFrame and AutoOpenAnything.mainFrame:IsShown() then
-                AutoOpenAnything.mainFrame:Hide()
+                OpenableBeGone.db.char[dbVersion].minimap.hide = true
+                OpenableBeGone:UpdateMinimapIcon()
+                OpenableBeGone.MainFrameUpdate()
+    		elseif OpenableBeGone.mainFrame and OpenableBeGone.mainFrame:IsShown() then
+                OpenableBeGone.mainFrame:Hide()
             else
-                AutoOpenAnything.ShowMainFrame()
+                OpenableBeGone.ShowMainFrame()
             end
         end,
         OnTooltipShow = function(tt)
-            addonname = GetAddOnMetadata(AutoOpenAnything:GetName(), "Title")
-            addonversion = GetAddOnMetadata(AutoOpenAnything:GetName(), "Version")
+            addonname = GetAddOnMetadata(OpenableBeGone:GetName(), "Title")
+            addonversion = GetAddOnMetadata(OpenableBeGone:GetName(), "Version")
             tt:AddLine(addonname .. " - " .. addonversion, 1, 1, 1, 1)
             tt:AddLine(" ", 1, 1, 0.2, 1)
             tt:AddLine("Shift-click to hide minimap button", 1, 1, 0.2, 1)
-            tt:AddLine("Console: /aoa /autoopenanything", 1, 1, 0.2, 1)
+            tt:AddLine("Console: /aoa /OpenableBeGone", 1, 1, 0.2, 1)
         end
     })
-    LibStub("LibDBIcon-1.0"):Register("AutoOpenAnything", autoOpenAnythingLDB, AutoOpenAnything.db.char[dbVersion].minimap)
-    AutoOpenAnything:UpdateMinimapIcon()
+    LibStub("LibDBIcon-1.0"):Register("OpenableBeGone", OpenableBeGoneLDB, OpenableBeGone.db.char[dbVersion].minimap)
+    OpenableBeGone:UpdateMinimapIcon()
 end
 
-function AutoOpenAnything:UpdateMinimapIcon()
-    if AutoOpenAnything.db.char[dbVersion].minimap.hide then
-        LibStub("LibDBIcon-1.0"):Hide(AutoOpenAnything:GetName())
+function OpenableBeGone:UpdateMinimapIcon()
+    if OpenableBeGone.db.char[dbVersion].minimap.hide then
+        LibStub("LibDBIcon-1.0"):Hide(OpenableBeGone:GetName())
     else
-        LibStub("LibDBIcon-1.0"):Show(AutoOpenAnything:GetName())
+        LibStub("LibDBIcon-1.0"):Show(OpenableBeGone:GetName())
     end
 end
 
-function AutoOpenAnything:SlashProcessorFunc(input)
+function OpenableBeGone:SlashProcessorFunc(input)
     -- Process the slash command ('input' contains whatever follows the slash command)
     if input == "debug" or input == "dbg" then
         showDebugOutput = not showDebugOutput
-        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 AutoOpenAnything Debug output: "..tostring(showDebugOutput))
+        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 OpenableBeGone Debug output: "..tostring(showDebugOutput))
     else
-        AutoOpenAnything:ShowMainFrame()
+        OpenableBeGone:ShowMainFrame()
     end
 end
 
-function AutoOpenAnything:AutoOpenContainers()
-    if (not UnitAffectingCombat("player") or not AutoOpenAnything.db.char[dbVersion].onlyOpenAfterCombat)
-    and not AutoOpenAnything.merchantShown and not AutoOpenAnything.adventureMapShown then
-        --DEFAULT_CHAT_FRAME:AddMessage("AutoOpenAnything:AutoOpenContainers()")
+function OpenableBeGone:AutoOpenContainers()
+    if (not UnitAffectingCombat("player") or not OpenableBeGone.db.char[dbVersion].onlyOpenAfterCombat)
+    and not OpenableBeGone.merchantShown and not OpenableBeGone.adventureMapShown then
+        --DEFAULT_CHAT_FRAME:AddMessage("OpenableBeGone:AutoOpenContainers()")
         for bag = 0, 4 do
             for slot = 0, C_Container.GetContainerNumSlots(bag) do
                 local id = C_Container.GetContainerItemID(bag, slot)
-                if id and AutoOpenAnything.allContainerItemIdsTable[id] and AutoOpenAnything.db.char[dbVersion].blacklist[id] == nil
-                and (AutoOpenAnything.allLockedContainerItemIdsTable[id] == nil or not AutoOpenAnything.db.char[dbVersion].dontOpenLocked) then
+                if id and OpenableBeGone.allContainerItemIdsTable[id] and OpenableBeGone.db.char[dbVersion].blacklist[id] == nil
+                and (OpenableBeGone.allLockedContainerItemIdsTable[id] == nil or not OpenableBeGone.db.char[dbVersion].dontOpenLocked) then
                     C_Container.UseContainerItem(bag, slot)
-                    if AutoOpenAnything.db.char[dbVersion].notifyInChat or showDebugOutput then
+                    if OpenableBeGone.db.char[dbVersion].notifyInChat or showDebugOutput then
                         DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00Opening : " .. C_Container.GetContainerItemLink(bag, slot) .. " ID: " .. C_Container.GetContainerItemID(bag, slot))
                     end
                     return
@@ -126,64 +126,64 @@ function AutoOpenAnything:AutoOpenContainers()
         end
     else
         if showDebugOutput then
-            DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 AutoOpenAnything - Skipping auto-open - inCombat: "..tostring(UnitAffectingCombat("player"))
-            ..", merchantShown: "..tostring(AutoOpenAnything.merchantShown)..", adventureMapShown: "..tostring(AutoOpenAnything.adventureMapShown))
+            DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 OpenableBeGone - Skipping auto-open - inCombat: "..tostring(UnitAffectingCombat("player"))
+            ..", merchantShown: "..tostring(OpenableBeGone.merchantShown)..", adventureMapShown: "..tostring(OpenableBeGone.adventureMapShown))
         end
     end
 end
 
-function AutoOpenAnything:BAG_UPDATE_DELAYED(event, message)
-    AutoOpenAnything:AutoOpenContainers()
+function OpenableBeGone:BAG_UPDATE_DELAYED(event, message)
+    OpenableBeGone:AutoOpenContainers()
 end
 
-function AutoOpenAnything:PLAYER_REGEN_ENABLED(event, message)
-    AutoOpenAnything:AutoOpenContainers()
+function OpenableBeGone:PLAYER_REGEN_ENABLED(event, message)
+    OpenableBeGone:AutoOpenContainers()
 end
 
-function AutoOpenAnything:MERCHANT_SHOW(event, message)
+function OpenableBeGone:MERCHANT_SHOW(event, message)
     if showDebugOutput then
-        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 AutoOpenAnything Merchant now shown")
+        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 OpenableBeGone Merchant now shown")
     end
-    AutoOpenAnything.merchantShown = true
+    OpenableBeGone.merchantShown = true
 end
 
-function AutoOpenAnything:MERCHANT_CLOSED(event, message)
+function OpenableBeGone:MERCHANT_CLOSED(event, message)
     if showDebugOutput then
-        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 AutoOpenAnything Merchant no longer shown")
+        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 OpenableBeGone Merchant no longer shown")
     end
-    AutoOpenAnything.merchantShown = false
-    AutoOpenAnything:AutoOpenContainers()
+    OpenableBeGone.merchantShown = false
+    OpenableBeGone:AutoOpenContainers()
 end
 
-function AutoOpenAnything:ADVENTURE_MAP_OPEN(event, message)
+function OpenableBeGone:ADVENTURE_MAP_OPEN(event, message)
     if showDebugOutput then
-        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 AutoOpenAnything Mission table now shown")
+        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 OpenableBeGone Mission table now shown")
     end
-    AutoOpenAnything.adventureMapShown = true
+    OpenableBeGone.adventureMapShown = true
 end
 
-function AutoOpenAnything:ADVENTURE_MAP_CLOSE(event, message)
+function OpenableBeGone:ADVENTURE_MAP_CLOSE(event, message)
     if showDebugOutput then
-        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 AutoOpenAnything Mission table no longer shown")
+        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 OpenableBeGone Mission table no longer shown")
     end
-    AutoOpenAnything.adventureMapShown = false
-    AutoOpenAnything:AutoOpenContainers()
+    OpenableBeGone.adventureMapShown = false
+    OpenableBeGone:AutoOpenContainers()
 end
 
-function AutoOpenAnything.ShowMainFrame()
+function OpenableBeGone.ShowMainFrame()
     if showDebugOutput then
-        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 AutoOpenAnything Showing Main Window")
+        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 OpenableBeGone Showing Main Window")
     end
-    if AutoOpenAnything.mainFrame then
-        if AutoOpenAnything.mainFrame:IsShown() then
+    if OpenableBeGone.mainFrame then
+        if OpenableBeGone.mainFrame:IsShown() then
             return
         end
-        AutoOpenAnything.mainFrame:Show()
+        OpenableBeGone.mainFrame:Show()
         return
     end
     ----------------------------------------------------------------
     -- Create the frame:
-    local frame = CreateFrame("Frame", "AutoOpenAnythingMainFrame", UIParent, "BackdropTemplate")
+    local frame = CreateFrame("Frame", "OpenableBeGoneMainFrame", UIParent, "BackdropTemplate")
     frame:SetPoint("CENTER")
     frame:SetMovable(true)
     frame:EnableMouse(true)
@@ -198,15 +198,15 @@ function AutoOpenAnything.ShowMainFrame()
     })
     frame:SetScript("OnDragStart", frame.StartMoving)
     frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
-    -- Add the frame as a global variable under the name `AutoOpenAnythingMainFrame`
-    _G["AutoOpenAnythingMainFrame"] = frame
-    -- Register the global variable `AutoOpenAnythingMainFrame` as a "special frame"
+    -- Add the frame as a global variable under the name `OpenableBeGoneMainFrame`
+    _G["OpenableBeGoneMainFrame"] = frame
+    -- Register the global variable `OpenableBeGoneMainFrame` as a "special frame"
     -- so that it is closed when the escape key is pressed.
-    tinsert(UISpecialFrames, "AutoOpenAnythingMainFrame")
+    tinsert(UISpecialFrames, "OpenableBeGoneMainFrame")
 
-    AutoOpenAnything.mainFrame = frame
+    OpenableBeGone.mainFrame = frame
 
-    local titlebar = CreateFrame("Frame", "AutoOpenAnythingTitleBar", frame, "BackdropTemplate")
+    local titlebar = CreateFrame("Frame", "OpenableBeGoneTitleBar", frame, "BackdropTemplate")
     titlebar:SetSize(frame:GetWidth(), TITLE_BAR_HEIGHT)
     titlebar:SetPoint("TOPLEFT", 0, 0)
     -- Give the frame a visible background and border:
@@ -222,14 +222,14 @@ function AutoOpenAnything.ShowMainFrame()
     title:SetJustifyV("CENTER")
     title:SetPoint("TOPLEFT", MARGIN, 0)
     title:SetFont(GameFontNormal:GetFont(), 16)
-    addonname = GetAddOnMetadata(AutoOpenAnything:GetName(), "Title")
-    addonversion = GetAddOnMetadata(AutoOpenAnything:GetName(), "Version")
+    addonname = GetAddOnMetadata(OpenableBeGone:GetName(), "Title")
+    addonversion = GetAddOnMetadata(OpenableBeGone:GetName(), "Version")
     title:SetText(addonname.." - "..addonversion)
     title:SetTextColor(1, 1, 0.2)
 
     local close = CreateFrame("Button", nil, titlebar, "UIPanelCloseButton")
     close:SetPoint("TOPRIGHT", 2, 1)
-    close:SetScript("OnClick", AutoOpenAnything.OnClose)
+    close:SetScript("OnClick", OpenableBeGone.OnClose)
 
     local search = CreateFrame("EditBox", "$parentSearch", frame, "InputBoxTemplate")
     frame.search = search
@@ -238,19 +238,19 @@ function AutoOpenAnything.ShowMainFrame()
     search:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", MARGIN + 6, -TITLE_BAR_HEIGHT - TOP_BAR_HEIGHT)
     search:SetAutoFocus(false)
     search:SetFontObject("ChatFontNormal")
-    search:SetScript("OnTextChanged", AutoOpenAnything.OnTextChanged)
-    search:SetScript("OnEnterPressed", AutoOpenAnything.OnEnterPressed)
-    search:SetScript("OnEscapePressed", AutoOpenAnything.OnEscapePressed)
-    search:SetScript("OnEditFocusLost", AutoOpenAnything.OnEditFocusLost)
-    search:SetScript("OnEditFocusGained", AutoOpenAnything.OnEditFocusGained)
+    search:SetScript("OnTextChanged", OpenableBeGone.OnTextChanged)
+    search:SetScript("OnEnterPressed", OpenableBeGone.OnEnterPressed)
+    search:SetScript("OnEscapePressed", OpenableBeGone.OnEscapePressed)
+    search:SetScript("OnEditFocusLost", OpenableBeGone.OnEditFocusLost)
+    search:SetScript("OnEditFocusGained", OpenableBeGone.OnEditFocusGained)
     search:SetText(SEARCH)
 
-    local lockedCheckboxFrame = CreateFrame("Button", "AutoOpenAnythingLockedCheckboxFrame", frame)
+    local lockedCheckboxFrame = CreateFrame("Button", "OpenableBeGoneLockedCheckboxFrame", frame)
     lockedCheckboxFrame:SetSize(frame:GetWidth() - SEARCH_BAR_WIDTH - 50, TITLE_BAR_HEIGHT)
     lockedCheckboxFrame:SetPoint("TOPRIGHT", 0, -TITLE_BAR_HEIGHT)
-    lockedCheckboxFrame:SetScript("OnClick", AutoOpenAnything.OnLockedCheckboxClick)
+    lockedCheckboxFrame:SetScript("OnClick", OpenableBeGone.OnLockedCheckboxClick)
 
-    local label = lockedCheckboxFrame:CreateFontString(nil, "ARTWORK", "GameTooltipText") --AutoOpenAnythingCombatCheckboxFrame
+    local label = lockedCheckboxFrame:CreateFontString(nil, "ARTWORK", "GameTooltipText") --OpenableBeGoneCombatCheckboxFrame
     label:SetWidth(lockedCheckboxFrame:GetWidth() - MARGIN * 2 - 24)
     label:SetHeight(lockedCheckboxFrame:GetHeight())
     label:SetJustifyH("LEFT")
@@ -261,22 +261,22 @@ function AutoOpenAnything.ShowMainFrame()
     label:SetTextColor(0, 0, 0)
 
 
-    local checked = CreateFrame("CheckButton", "AutoOpenAnythingLockedCheckbox", lockedCheckboxFrame, "ChatConfigCheckButtonTemplate") -- "InterfaceOptionsSmallCheckButtonTemplate"
+    local checked = CreateFrame("CheckButton", "OpenableBeGoneLockedCheckbox", lockedCheckboxFrame, "ChatConfigCheckButtonTemplate") -- "InterfaceOptionsSmallCheckButtonTemplate"
 
-    checked:SetScript("OnClick", AutoOpenAnything.OnLockedCheckboxClick)
+    checked:SetScript("OnClick", OpenableBeGone.OnLockedCheckboxClick)
     checked:SetWidth(24)
     checked:SetHeight(24)
     checked:SetPoint("RIGHT", -MARGIN, 0)
     checked:SetHitRectInsets(0, 0, 0, 0)
-    checked:SetChecked(AutoOpenAnything.db.char[dbVersion].dontOpenLocked)
-    AutoOpenAnything.lockedCheckbox = checked
+    checked:SetChecked(OpenableBeGone.db.char[dbVersion].dontOpenLocked)
+    OpenableBeGone.lockedCheckbox = checked
 
-    local combatCheckboxFrame = CreateFrame("Button", "AutoOpenAnythingCombatCheckboxFrame", frame)
+    local combatCheckboxFrame = CreateFrame("Button", "OpenableBeGoneCombatCheckboxFrame", frame)
     combatCheckboxFrame:SetSize(frame:GetWidth() - SEARCH_BAR_WIDTH - 50, TITLE_BAR_HEIGHT)
     combatCheckboxFrame:SetPoint("TOPRIGHT", 0, -TITLE_BAR_HEIGHT*2)
-    combatCheckboxFrame:SetScript("OnClick", AutoOpenAnything.OnCombatCheckboxClick)
+    combatCheckboxFrame:SetScript("OnClick", OpenableBeGone.OnCombatCheckboxClick)
 
-    local label = combatCheckboxFrame:CreateFontString(nil, "ARTWORK", "GameTooltipText") --AutoOpenAnythingCombatCheckboxFrame
+    local label = combatCheckboxFrame:CreateFontString(nil, "ARTWORK", "GameTooltipText") --OpenableBeGoneCombatCheckboxFrame
     label:SetWidth(combatCheckboxFrame:GetWidth() - MARGIN * 2 - 24)
     label:SetHeight(combatCheckboxFrame:GetHeight())
     label:SetJustifyH("LEFT")
@@ -286,21 +286,21 @@ function AutoOpenAnything.ShowMainFrame()
     label:SetText("Only open after combat")
     label:SetTextColor(0, 0, 0)
 
-    local checked = CreateFrame("CheckButton", "AutoOpenAnythingCombatCheckbox", combatCheckboxFrame, "ChatConfigCheckButtonTemplate" ) --InterfaceOptionsSmallCheckButtonTemplate
-    checked:SetScript("OnClick", AutoOpenAnything.OnCombatCheckboxClick)
+    local checked = CreateFrame("CheckButton", "OpenableBeGoneCombatCheckbox", combatCheckboxFrame, "ChatConfigCheckButtonTemplate" ) --InterfaceOptionsSmallCheckButtonTemplate
+    checked:SetScript("OnClick", OpenableBeGone.OnCombatCheckboxClick)
     checked:SetWidth(24)
     checked:SetHeight(24)
     checked:SetPoint("RIGHT", -MARGIN, 0)
     checked:SetHitRectInsets(0, 0, 0, 0)
-    checked:SetChecked(AutoOpenAnything.db.char[dbVersion].onlyOpenAfterCombat)
-    AutoOpenAnything.combatCheckbox = checked
+    checked:SetChecked(OpenableBeGone.db.char[dbVersion].onlyOpenAfterCombat)
+    OpenableBeGone.combatCheckbox = checked
 
-    local notifyCheckboxFrame = CreateFrame("Button", "AutoOpenAnythingNotifyCheckboxFrame", frame)
+    local notifyCheckboxFrame = CreateFrame("Button", "OpenableBeGoneNotifyCheckboxFrame", frame)
     notifyCheckboxFrame:SetSize(frame:GetWidth() - SEARCH_BAR_WIDTH - 50, TITLE_BAR_HEIGHT)
     notifyCheckboxFrame:SetPoint("TOPRIGHT", 0, -TITLE_BAR_HEIGHT*3)
-    notifyCheckboxFrame:SetScript("OnClick", AutoOpenAnything.OnNotifyCheckboxClick)
+    notifyCheckboxFrame:SetScript("OnClick", OpenableBeGone.OnNotifyCheckboxClick)
 
-    local label = notifyCheckboxFrame:CreateFontString(nil, "ARTWORK", "GameTooltipText") --AutoOpenAnythingNotifyCheckboxFrame
+    local label = notifyCheckboxFrame:CreateFontString(nil, "ARTWORK", "GameTooltipText") --OpenableBeGoneNotifyCheckboxFrame
     label:SetWidth(notifyCheckboxFrame:GetWidth() - MARGIN * 2 - 24)
     label:SetHeight(notifyCheckboxFrame:GetHeight())
     label:SetJustifyH("LEFT")
@@ -309,20 +309,20 @@ function AutoOpenAnything.ShowMainFrame()
     label:SetFont(GameFontNormal:GetFont(), 12)
     label:SetText("Notify in chat")
     label:SetTextColor(0, 0, 0)
-    local checked = CreateFrame("CheckButton", "AutoOpenAnythingNotifyCheckbox", notifyCheckboxFrame, "ChatConfigCheckButtonTemplate") --InterfaceOptionsSmallCheckButtonTemplate
-    checked:SetScript("OnClick", AutoOpenAnything.OnNotifyCheckboxClick)
+    local checked = CreateFrame("CheckButton", "OpenableBeGoneNotifyCheckbox", notifyCheckboxFrame, "ChatConfigCheckButtonTemplate") --InterfaceOptionsSmallCheckButtonTemplate
+    checked:SetScript("OnClick", OpenableBeGone.OnNotifyCheckboxClick)
     checked:SetWidth(24)
     checked:SetHeight(24)
     checked:SetPoint("RIGHT", -MARGIN, 0)
     checked:SetHitRectInsets(0, 0, 0, 0)
-    checked:SetChecked(AutoOpenAnything.db.char[dbVersion].notifyInChat)
-    AutoOpenAnything.notifyCheckbox = checked
+    checked:SetChecked(OpenableBeGone.db.char[dbVersion].notifyInChat)
+    OpenableBeGone.notifyCheckbox = checked
 
-    local minimapCheckboxFrame = CreateFrame("Button", "AutoOpenAnythingMinimapCheckboxFrame", frame)
+    local minimapCheckboxFrame = CreateFrame("Button", "OpenableBeGoneMinimapCheckboxFrame", frame)
     minimapCheckboxFrame:SetSize(frame:GetWidth() - SEARCH_BAR_WIDTH - 50, TITLE_BAR_HEIGHT)
     minimapCheckboxFrame:SetPoint("TOPRIGHT", 0, -TITLE_BAR_HEIGHT*4)
-    minimapCheckboxFrame:SetScript("OnClick", AutoOpenAnything.OnMinimapCheckboxClick)
-    local label = minimapCheckboxFrame:CreateFontString(nil, "ARTWORK", "GameTooltipText") --AutoOpenAnythingMinimapCheckboxFrame
+    minimapCheckboxFrame:SetScript("OnClick", OpenableBeGone.OnMinimapCheckboxClick)
+    local label = minimapCheckboxFrame:CreateFontString(nil, "ARTWORK", "GameTooltipText") --OpenableBeGoneMinimapCheckboxFrame
     label:SetWidth(minimapCheckboxFrame:GetWidth() - MARGIN * 2 - 24)
     label:SetHeight(minimapCheckboxFrame:GetHeight())
     label:SetJustifyH("LEFT")
@@ -331,20 +331,20 @@ function AutoOpenAnything.ShowMainFrame()
     label:SetFont(GameFontNormal:GetFont(), 12)
     label:SetText("Show minimap icon")
     label:SetTextColor(0, 0, 0)
-    local checked = CreateFrame("CheckButton", "AutoOpenAnythingMinimapCheckbox", minimapCheckboxFrame, "ChatConfigCheckButtonTemplate") --InterfaceOptionsSmallCheckButtonTemplate
-    checked:SetScript("OnClick", AutoOpenAnything.OnMinimapCheckboxClick)
+    local checked = CreateFrame("CheckButton", "OpenableBeGoneMinimapCheckbox", minimapCheckboxFrame, "ChatConfigCheckButtonTemplate") --InterfaceOptionsSmallCheckButtonTemplate
+    checked:SetScript("OnClick", OpenableBeGone.OnMinimapCheckboxClick)
     checked:SetWidth(24)
     checked:SetHeight(24)
     checked:SetPoint("RIGHT", -MARGIN, 0)
     checked:SetHitRectInsets(0, 0, 0, 0)
-    checked:SetChecked(not AutoOpenAnything.db.char[dbVersion].minimap.hide)
-    AutoOpenAnything.minimapCheckbox = checked
+    checked:SetChecked(not OpenableBeGone.db.char[dbVersion].minimap.hide)
+    OpenableBeGone.minimapCheckbox = checked
 
-    AutoOpenAnything.scrollbar = CreateFrame("ScrollFrame", "AutoOpenAnythingScrollFrame", frame, "FauxScrollFrameTemplate")
-    AutoOpenAnything.scrollbar:SetPoint("TOPLEFT", -1, -7 - TOP_BAR_HEIGHT - TITLE_BAR_HEIGHT)
-    AutoOpenAnything.scrollbar:SetPoint("BOTTOMRIGHT", -31, 8)
-    AutoOpenAnything.scrollbar:SetScript("OnShow", AutoOpenAnything.xScrollFrame_OnShow)
-    AutoOpenAnything.scrollbar:SetScript("OnVerticalScroll", AutoOpenAnything.xScrollFrame_OnVerticalScroll)
+    OpenableBeGone.scrollbar = CreateFrame("ScrollFrame", "OpenableBeGoneScrollFrame", frame, "FauxScrollFrameTemplate")
+    OpenableBeGone.scrollbar:SetPoint("TOPLEFT", -1, -7 - TOP_BAR_HEIGHT - TITLE_BAR_HEIGHT)
+    OpenableBeGone.scrollbar:SetPoint("BOTTOMRIGHT", -31, 8)
+    OpenableBeGone.scrollbar:SetScript("OnShow", OpenableBeGone.xScrollFrame_OnShow)
+    OpenableBeGone.scrollbar:SetScript("OnVerticalScroll", OpenableBeGone.xScrollFrame_OnVerticalScroll)
 
     local top = frame:CreateTexture("$parentTop", "ARTWORK")
     frame.top = top
@@ -362,7 +362,7 @@ function AutoOpenAnything.ShowMainFrame()
     bottom:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-ScrollBar")
     bottom:SetTexCoord(0.515625, 1, 0, 0.421875)
 
-    buttonGroup = CreateFrame("Frame", "AutoOpenAnythingButtonGroup", frame, "BackdropTemplate")
+    buttonGroup = CreateFrame("Frame", "OpenableBeGoneButtonGroup", frame, "BackdropTemplate")
     buttonGroup:EnableMouse(true)
     buttonGroup:SetMovable(true)
     buttonGroup:SetSize(frame:GetWidth(), ROW_HEIGHT * MAX_ROWS + ROW_CONTAINER_MARGIN)
@@ -376,19 +376,19 @@ function AutoOpenAnything.ShowMainFrame()
 
     for i=1, 10, 1 do
 
-        local button = CreateFrame("Button", "AutoOpenAnythingButtonFrame"..i, buttonGroup)
+        local button = CreateFrame("Button", "OpenableBeGoneButtonFrame"..i, buttonGroup)
         button:SetWidth(buttonGroup:GetWidth() - 24)
         button:SetHeight(ROW_HEIGHT)
         if ( i == 1 ) then
             button:SetPoint("TOPLEFT", MARGIN, -6)
         else
-            button:SetPoint("TOP", AutoOpenAnything.buttonFrames[i-1], "BOTTOM")
+            button:SetPoint("TOP", OpenableBeGone.buttonFrames[i-1], "BOTTOM")
         end
 
         button:RegisterForClicks("LeftButtonUp")
-        button:SetScript("OnClick", AutoOpenAnything.OnClick)
-        --button:SetScript("OnEnter", AutoOpenAnything.OnEnter)
-        button:SetScript("OnLeave", AutoOpenAnything.OnLeave)
+        button:SetScript("OnClick", OpenableBeGone.OnClick)
+        --button:SetScript("OnEnter", OpenableBeGone.OnEnter)
+        button:SetScript("OnLeave", OpenableBeGone.OnLeave)
 
         local highlight = button:CreateTexture("$parentHighlight", "BACKGROUND") -- better highlight
         button.highlight = highlight
@@ -431,7 +431,7 @@ function AutoOpenAnything.ShowMainFrame()
 
         local checked = CreateFrame("CheckButton", "$parentChecked", button, "ChatConfigCheckButtonTemplate") --InterfaceOptionsSmallCheckButtonTemplate
         button.checked = checked
-        checked:SetScript("OnClick", AutoOpenAnything.OnCheckboxClick)
+        checked:SetScript("OnClick", OpenableBeGone.OnCheckboxClick)
         checked:SetWidth(24)
         checked:SetHeight(24)
         checked:SetPoint("RIGHT", -20, 0)
@@ -439,42 +439,42 @@ function AutoOpenAnything.ShowMainFrame()
         checked:SetChecked(false)
         --DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 check5")
 
-        AutoOpenAnything.buttonFrames[i] = button
+        OpenableBeGone.buttonFrames[i] = button
     end
 
     frame:Show()
-    --DEFAULT_CHAT_FRAME:AddMessage("[AutoOpenAnything][Debug] Update:  MainFrameUpdate")
-    AutoOpenAnything.MainFrameUpdate()
+    --DEFAULT_CHAT_FRAME:AddMessage("[OpenableBeGone][Debug] Update:  MainFrameUpdate")
+    OpenableBeGone.MainFrameUpdate()
 end
 
-function AutoOpenAnything.MainFrameUpdate()
-    --DEFAULT_CHAT_FRAME:AddMessage("[AutoOpenAnything][Debug] MainFrameUpdate")
+function OpenableBeGone.MainFrameUpdate()
+    --DEFAULT_CHAT_FRAME:AddMessage("[OpenableBeGone][Debug] MainFrameUpdate")
     local numItems
-    if AutoOpenAnything.searching == "" or AutoOpenAnything.searching == SEARCH:lower() then
-        numItems = #(AutoOpenAnything.allContainerItemIds)
+    if OpenableBeGone.searching == "" or OpenableBeGone.searching == SEARCH:lower() then
+        numItems = #(OpenableBeGone.allContainerItemIds)
     else
-        numItems = #AutoOpenAnything.searchResults[AutoOpenAnything.searching]
+        numItems = #OpenableBeGone.searchResults[OpenableBeGone.searching]
     end
     --Todo: fix these db lookups
-    AutoOpenAnything.lockedCheckbox:SetChecked(AutoOpenAnything.db.char[dbVersion].dontOpenLocked)
-    AutoOpenAnything.combatCheckbox:SetChecked(AutoOpenAnything.db.char[dbVersion].onlyOpenAfterCombat)
-    AutoOpenAnything.notifyCheckbox:SetChecked(AutoOpenAnything.db.char[dbVersion].notifyInChat)
-    AutoOpenAnything.minimapCheckbox:SetChecked(not AutoOpenAnything.db.char[dbVersion].minimap.hide)
+    OpenableBeGone.lockedCheckbox:SetChecked(OpenableBeGone.db.char[dbVersion].dontOpenLocked)
+    OpenableBeGone.combatCheckbox:SetChecked(OpenableBeGone.db.char[dbVersion].onlyOpenAfterCombat)
+    OpenableBeGone.notifyCheckbox:SetChecked(OpenableBeGone.db.char[dbVersion].notifyInChat)
+    OpenableBeGone.minimapCheckbox:SetChecked(not OpenableBeGone.db.char[dbVersion].minimap.hide)
 
-    FauxScrollFrame_Update(AutoOpenAnything.scrollbar, numItems, 10, ROW_HEIGHT, nil, nil, nil, nil, nil, nil, true)
+    FauxScrollFrame_Update(OpenableBeGone.scrollbar, numItems, 10, ROW_HEIGHT, nil, nil, nil, nil, nil, nil, true)
     local invalidOffset = 0
     for i=1, 10, 1 do
-        local offset = i + FauxScrollFrame_GetOffset(AutoOpenAnything.scrollbar)+invalidOffset
-        local button = AutoOpenAnything.buttonFrames[i]
+        local offset = i + FauxScrollFrame_GetOffset(OpenableBeGone.scrollbar)+invalidOffset
+        local button = OpenableBeGone.buttonFrames[i]
         button.hover = nil
         if ( offset <= numItems ) then
             local breakwhile = false
             local itemId
             while not breakwhile and offset <= numItems do
-                if AutoOpenAnything.searching == "" or AutoOpenAnything.searching == SEARCH:lower() then
-                    itemId = AutoOpenAnything.allContainerItemIds[offset]
+                if OpenableBeGone.searching == "" or OpenableBeGone.searching == SEARCH:lower() then
+                    itemId = OpenableBeGone.allContainerItemIds[offset]
                 else
-                    itemId = AutoOpenAnything.searchResults[AutoOpenAnything.searching][offset]
+                    itemId = OpenableBeGone.searchResults[OpenableBeGone.searching][offset]
                 end
                 local item = Item:CreateFromItemID(itemId)
                 local itemIsValid = GetItemInfoInstant(itemId)
@@ -486,7 +486,7 @@ function AutoOpenAnything.MainFrameUpdate()
                 end
             end
             if offset <= numItems then
-                --DEFAULT_CHAT_FRAME:AddMessage("[AutoOpenAnything][Debug] async loading itemId: " .. itemId .. ", offset:" .. offset)
+                --DEFAULT_CHAT_FRAME:AddMessage("[OpenableBeGone][Debug] async loading itemId: " .. itemId .. ", offset:" .. offset)
                 button.itemname:SetText("Loading...")
                 button.iteminfo:SetText("ID["..itemId.."]")
                 button.icon:SetTexture(nil)
@@ -497,10 +497,10 @@ function AutoOpenAnything.MainFrameUpdate()
                     itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType,
                     expacID, setID, isCraftingReagent = GetItemInfo(itemId)
                     if itemName ~= nil then
-                        --DEFAULT_CHAT_FRAME:AddMessage("[AutoOpenAnything][Debug] done async loading itemId: " .. itemId)
-                        AutoOpenAnything.UpdateButton(button, itemId, offset)
+                        --DEFAULT_CHAT_FRAME:AddMessage("[OpenableBeGone][Debug] done async loading itemId: " .. itemId)
+                        OpenableBeGone.UpdateButton(button, itemId, offset)
                     else
-                        --DEFAULT_CHAT_FRAME:AddMessage("[AutoOpenAnything][Debug] ERROR async loading itemId: " .. itemId)
+                        --DEFAULT_CHAT_FRAME:AddMessage("[OpenableBeGone][Debug] ERROR async loading itemId: " .. itemId)
                     end
                 end)
             else
@@ -512,12 +512,12 @@ function AutoOpenAnything.MainFrameUpdate()
     end
 end
 
-function AutoOpenAnything.UpdateButton(button, itemId, offset)
+function OpenableBeGone.UpdateButton(button, itemId, offset)
     itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType,
     itemStackCount, itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType,
     expacID, setID, isCraftingReagent = GetItemInfo(itemId)
-    --DEFAULT_CHAT_FRAME:AddMessage("[AutoOpenAnything][Debug] displaying itemId: " .. itemId .. " name:" .. itemName)
-    --DEFAULT_CHAT_FRAME:AddMessage("[AutoOpenAnything][Debug] UpdateButton searching: " .. AutoOpenAnything.searching)
+    --DEFAULT_CHAT_FRAME:AddMessage("[OpenableBeGone][Debug] displaying itemId: " .. itemId .. " name:" .. itemName)
+    --DEFAULT_CHAT_FRAME:AddMessage("[OpenableBeGone][Debug] UpdateButton searching: " .. OpenableBeGone.searching)
     button.itemid = itemId
     button.itemname:SetText(itemName)
     button.iteminfo:SetText("ID["..itemId.."]")
@@ -530,7 +530,7 @@ function AutoOpenAnything.UpdateButton(button, itemId, offset)
         button.itemname:SetTextColor(r, g, b)
     end
     button.checked:SetChecked(true)
-    if AutoOpenAnything.db.char[dbVersion].blacklist[button.itemid] then
+    if OpenableBeGone.db.char[dbVersion].blacklist[button.itemid] then
         button.checked:SetChecked(false)
     end
     button.r = r
@@ -540,131 +540,131 @@ function AutoOpenAnything.UpdateButton(button, itemId, offset)
     button:Show()
 end
 
-function AutoOpenAnything.OnClose()
+function OpenableBeGone.OnClose()
     if showDebugOutput then
-        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 AutoOpenAnything Closing Main Window")
+        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 OpenableBeGone Closing Main Window")
     end
-    AutoOpenAnything.mainFrame:Hide()
+    OpenableBeGone.mainFrame:Hide()
 end
 
-function AutoOpenAnything.xScrollFrame_OnShow(self)
-    --DEFAULT_CHAT_FRAME:AddMessage("[AutoOpenAnything][Debug] xScrollFrame_OnShow")
-    AutoOpenAnything.MainFrameUpdate()
+function OpenableBeGone.xScrollFrame_OnShow(self)
+    --DEFAULT_CHAT_FRAME:AddMessage("[OpenableBeGone][Debug] xScrollFrame_OnShow")
+    OpenableBeGone.MainFrameUpdate()
 end
 
-function AutoOpenAnything.xScrollFrame_OnVerticalScroll(self, offset)
-    --DEFAULT_CHAT_FRAME:AddMessage("[AutoOpenAnything][Debug] OnVerticalScroll")
+function OpenableBeGone.xScrollFrame_OnVerticalScroll(self, offset)
+    --DEFAULT_CHAT_FRAME:AddMessage("[OpenableBeGone][Debug] OnVerticalScroll")
     local current_offset_n = FauxScrollFrame_GetOffset(self)
     local offset_n = (offset >= 0 and 1 or -1) * math.floor(math.abs(offset) / ROW_HEIGHT + 0.1)
     local changed_n = offset_n - current_offset_n
-    FauxScrollFrame_OnVerticalScroll(self, offset, ROW_HEIGHT, AutoOpenAnything.MainFrameUpdate)
+    FauxScrollFrame_OnVerticalScroll(self, offset, ROW_HEIGHT, OpenableBeGone.MainFrameUpdate)
 end
 
-function AutoOpenAnything.OnCheckboxClick(self, button)
-    AutoOpenAnything.HandleOnClick(self:GetParent())
+function OpenableBeGone.OnCheckboxClick(self, button)
+    OpenableBeGone.HandleOnClick(self:GetParent())
 end
 
-function AutoOpenAnything.OnLockedCheckboxClick(self, button)
+function OpenableBeGone.OnLockedCheckboxClick(self, button)
     if showDebugOutput then
-        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 AutoOpenAnything dontOpenLocked: "..tostring(not AutoOpenAnything.db.char[dbVersion].dontOpenLocked))
+        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 OpenableBeGone dontOpenLocked: "..tostring(not OpenableBeGone.db.char[dbVersion].dontOpenLocked))
     end
-    AutoOpenAnything.db.char[dbVersion].dontOpenLocked = not AutoOpenAnything.db.char[dbVersion].dontOpenLocked
-    AutoOpenAnything.MainFrameUpdate()
+    OpenableBeGone.db.char[dbVersion].dontOpenLocked = not OpenableBeGone.db.char[dbVersion].dontOpenLocked
+    OpenableBeGone.MainFrameUpdate()
 end
 
-function AutoOpenAnything.OnCombatCheckboxClick(self, button)
+function OpenableBeGone.OnCombatCheckboxClick(self, button)
     if showDebugOutput then
-        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 AutoOpenAnything onlyOpenAfterCombat: "..tostring(not AutoOpenAnything.db.char[dbVersion].onlyOpenAfterCombat))
+        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 OpenableBeGone onlyOpenAfterCombat: "..tostring(not OpenableBeGone.db.char[dbVersion].onlyOpenAfterCombat))
     end
-    AutoOpenAnything.db.char[dbVersion].onlyOpenAfterCombat = not AutoOpenAnything.db.char[dbVersion].onlyOpenAfterCombat
-    AutoOpenAnything.MainFrameUpdate()
+    OpenableBeGone.db.char[dbVersion].onlyOpenAfterCombat = not OpenableBeGone.db.char[dbVersion].onlyOpenAfterCombat
+    OpenableBeGone.MainFrameUpdate()
 end
 
-function AutoOpenAnything.OnNotifyCheckboxClick(self, button)
+function OpenableBeGone.OnNotifyCheckboxClick(self, button)
     if showDebugOutput then
-        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 AutoOpenAnything notifyInChat: "..tostring(not AutoOpenAnything.db.char[dbVersion].notifyInChat))
+        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 OpenableBeGone notifyInChat: "..tostring(not OpenableBeGone.db.char[dbVersion].notifyInChat))
     end
-    AutoOpenAnything.db.char[dbVersion].notifyInChat = not AutoOpenAnything.db.char[dbVersion].notifyInChat
-    AutoOpenAnything.MainFrameUpdate()
+    OpenableBeGone.db.char[dbVersion].notifyInChat = not OpenableBeGone.db.char[dbVersion].notifyInChat
+    OpenableBeGone.MainFrameUpdate()
 end
 
-function AutoOpenAnything.OnMinimapCheckboxClick(self, button)
+function OpenableBeGone.OnMinimapCheckboxClick(self, button)
     if showDebugOutput then
-        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 AutoOpenAnything minimap.hide: "..tostring(not AutoOpenAnything.db.char[dbVersion].minimap.hide))
+        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 OpenableBeGone minimap.hide: "..tostring(not OpenableBeGone.db.char[dbVersion].minimap.hide))
     end
-    AutoOpenAnything.db.char[dbVersion].minimap.hide = not AutoOpenAnything.db.char[dbVersion].minimap.hide
-    AutoOpenAnything:UpdateMinimapIcon()
-    AutoOpenAnything.MainFrameUpdate()
+    OpenableBeGone.db.char[dbVersion].minimap.hide = not OpenableBeGone.db.char[dbVersion].minimap.hide
+    OpenableBeGone:UpdateMinimapIcon()
+    OpenableBeGone.MainFrameUpdate()
 end
 
-function AutoOpenAnything.OnEnter(self, button)
-    --DEFAULT_CHAT_FRAME:AddMessage("[AutoOpenAnything][Debug] OnEnter "..self.itemid)
+function OpenableBeGone.OnEnter(self, button)
+    --DEFAULT_CHAT_FRAME:AddMessage("[OpenableBeGone][Debug] OnEnter "..self.itemid)
     self.highlight:SetVertexColor(self.r, self.g, self.b, 0.2)
     self.highlight:Show()
-    AutoOpenAnything.tooltip:SetOwner(self, "ANCHOR_NONE")
-    AutoOpenAnything.tooltip:SetPoint("RIGHT", self, "LEFT", -8, 0)
-    AutoOpenAnything.tooltip:SetHyperlink(self.itemlink)
+    OpenableBeGone.tooltip:SetOwner(self, "ANCHOR_NONE")
+    OpenableBeGone.tooltip:SetPoint("RIGHT", self, "LEFT", -8, 0)
+    OpenableBeGone.tooltip:SetHyperlink(self.itemlink)
 end
 
-function AutoOpenAnything.OnLeave(self, button)
+function OpenableBeGone.OnLeave(self, button)
     self.highlight:Hide()
-    AutoOpenAnything.tooltip:SetOwner(UIParent, "ANCHOR_NONE")
+    OpenableBeGone.tooltip:SetOwner(UIParent, "ANCHOR_NONE")
 end
 
-function AutoOpenAnything.OnClick(self, button)
-    AutoOpenAnything.HandleOnClick(self)
+function OpenableBeGone.OnClick(self, button)
+    OpenableBeGone.HandleOnClick(self)
 end
 
-function AutoOpenAnything.HandleOnClick(self)
+function OpenableBeGone.HandleOnClick(self)
     if showDebugOutput then
-        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 AutoOpenAnything item '"..self.itemid.."' enabled: "..tostring(AutoOpenAnything.db.char[dbVersion].blacklist[self.itemid] ~= nil))
+        DEFAULT_CHAT_FRAME:AddMessage("|cFFff0ef3 OpenableBeGone item '"..self.itemid.."' enabled: "..tostring(OpenableBeGone.db.char[dbVersion].blacklist[self.itemid] ~= nil))
     end
-    if AutoOpenAnything.db.char[dbVersion].blacklist[self.itemid] then
-        AutoOpenAnything.db.char[dbVersion].blacklist[self.itemid] = nil
+    if OpenableBeGone.db.char[dbVersion].blacklist[self.itemid] then
+        OpenableBeGone.db.char[dbVersion].blacklist[self.itemid] = nil
     else
-        AutoOpenAnything.db.char[dbVersion].blacklist[self.itemid] = true
+        OpenableBeGone.db.char[dbVersion].blacklist[self.itemid] = true
     end
-    AutoOpenAnything.MainFrameUpdate()
+    OpenableBeGone.MainFrameUpdate()
 end
 
-function AutoOpenAnything.OnTextChanged(self)
-    AutoOpenAnything.searching = self:GetText():trim():lower()
-    if AutoOpenAnything.searching == "" or AutoOpenAnything.searching == SEARCH:lower() then
-        AutoOpenAnything.MainFrameUpdate()
+function OpenableBeGone.OnTextChanged(self)
+    OpenableBeGone.searching = self:GetText():trim():lower()
+    if OpenableBeGone.searching == "" or OpenableBeGone.searching == SEARCH:lower() then
+        OpenableBeGone.MainFrameUpdate()
         return
     end
 
-    --DEFAULT_CHAT_FRAME:AddMessage("[AutoOpenAnything][Debug] searching: "..AutoOpenAnything.searching)
+    --DEFAULT_CHAT_FRAME:AddMessage("[OpenableBeGone][Debug] searching: "..OpenableBeGone.searching)
     resultIndices = {}
-    for index, value in ipairs(AutoOpenAnything.allContainerItemNames) do
-        if value:lower():match(AutoOpenAnything.searching) then
-            table.insert(resultIndices, AutoOpenAnything.allContainerItemIds[index])
+    for index, value in ipairs(OpenableBeGone.allContainerItemNames) do
+        if value:lower():match(OpenableBeGone.searching) then
+            table.insert(resultIndices, OpenableBeGone.allContainerItemIds[index])
         end
     end
-    AutoOpenAnything.searchResults[AutoOpenAnything.searching] = resultIndices
-    ---DEFAULT_CHAT_FRAME:AddMessage("[AutoOpenAnything][Debug] resultcount: "..#(AutoOpenAnything.searchResults[AutoOpenAnything.searching]))
-    AutoOpenAnything.MainFrameUpdate()
+    OpenableBeGone.searchResults[OpenableBeGone.searching] = resultIndices
+    ---DEFAULT_CHAT_FRAME:AddMessage("[OpenableBeGone][Debug] resultcount: "..#(OpenableBeGone.searchResults[OpenableBeGone.searching]))
+    OpenableBeGone.MainFrameUpdate()
 end
 
-function AutoOpenAnything.OnEnterPressed(self)
+function OpenableBeGone.OnEnterPressed(self)
     self:ClearFocus()
 end
 
-function AutoOpenAnything.OnEscapePressed(self)
+function OpenableBeGone.OnEscapePressed(self)
     self:ClearFocus()
     self:SetText(SEARCH)
-    AutoOpenAnything.searching = ""
+    OpenableBeGone.searching = ""
 end
 
-function AutoOpenAnything.OnEditFocusLost(self)
+function OpenableBeGone.OnEditFocusLost(self)
     self:HighlightText(0, 0)
     if ( strtrim(self:GetText()) == "" ) then
         self:SetText(SEARCH)
-        AutoOpenAnything.searching = ""
+        OpenableBeGone.searching = ""
     end
 end
 
-function AutoOpenAnything.OnEditFocusGained(self)
+function OpenableBeGone.OnEditFocusGained(self)
     self:HighlightText()
     if ( self:GetText():trim():lower() == SEARCH:lower() ) then
         self:SetText("")
