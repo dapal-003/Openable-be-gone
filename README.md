@@ -1,7 +1,7 @@
 ## Openable be gone
 A WoW addon that automatically opens all containers directly after looting them
 
-Available on Curseforge: Contains a list of all openable item ids currently in the game (as of 10.0.7)
+Available on Curseforge: Contains a list of all openable item ids currently in the game (as of 10.1.0)
 
 Features:
 * Contains a list of all openable item ids currently in the game [as of 10.0.7](https://www.wowhead.com/items?filter=11;1;0)
