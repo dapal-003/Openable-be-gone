@@ -1,8 +1,8 @@
-## Interface: 100200
+## Interface: 100205
 ## Title: Openables be gone
 ## Notes: Automatically open all containers directly after looting them.
 ## Author: mrmaffen, Dapal-003
-## Version: 1.33
+## Version: 1.34
 ## SavedVariables: OpenableBeGoneDB
 
 embeds.xml
