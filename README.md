@@ -4,7 +4,7 @@ A WoW addon that automatically opens all containers directly after looting them
 Available on Curseforge: [here](https://curseforge.com/wow/addons/auto-open-anything-updated)
 Avaliable on Wago.io: [here](https://addons.wago.io/addons/openable-be-gone)
 Features:
-* Contains a list of all openable item ids currently in the game [as of 10.2.0](https://www.wowhead.com/items?filter=11;1;0)
+* Contains a list of all openable item ids currently in the game [as of 11.0.0](https://www.wowhead.com/items?filter=11;1;0)
 * Feature to turn auto-opening on/off while you're in combat
 * By default all locked containers are being ignored. This can be changed in the options
 * All chat notifications are turned off by default. Also changeable in the options
