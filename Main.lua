@@ -77,8 +77,8 @@ function OpenableBeGone:OnInitialize()
             end
         end,
         OnTooltipShow = function(tt)
-            addonname = GetAddOnMetadata(OpenableBeGone:GetName(), "Title")
-            addonversion = GetAddOnMetadata(OpenableBeGone:GetName(), "Version")
+            addonname = C_AddOns.GetAddOnMetadata(OpenableBeGone:GetName(), "Title")
+            addonversion = C_AddOns.GetAddOnMetadata(OpenableBeGone:GetName(), "Version")
             tt:AddLine(addonname .. " - " .. addonversion, 1, 1, 1, 1)
             tt:AddLine(" ", 1, 1, 0.2, 1)
             tt:AddLine("Shift-click to hide minimap button", 1, 1, 0.2, 1)
@@ -222,8 +222,8 @@ function OpenableBeGone.ShowMainFrame()
     title:SetJustifyV("CENTER")
     title:SetPoint("TOPLEFT", MARGIN, 0)
     title:SetFont(GameFontNormal:GetFont(), 16)
-    addonname = GetAddOnMetadata(OpenableBeGone:GetName(), "Title")
-    addonversion = GetAddOnMetadata(OpenableBeGone:GetName(), "Version")
+    addonname = C_AddOns.GetAddOnMetadata(OpenableBeGone:GetName(), "Title")
+    addonversion = C_AddOns.GetAddOnMetadata(OpenableBeGone:GetName(), "Version")
     title:SetText(addonname.." - "..addonversion)
     title:SetTextColor(1, 1, 0.2)
 
@@ -526,7 +526,7 @@ function OpenableBeGone.UpdateButton(button, itemId, offset)
 
     local r, g, b = 0.5, 0.5, 0.5
     if itemQuality then
-        r, g, b = GetItemQualityColor(itemQuality)
+        r, g, b = C_Item.GetItemQualityColor(itemQuality)
         button.itemname:SetTextColor(r, g, b)
     end
     button.checked:SetChecked(true)
