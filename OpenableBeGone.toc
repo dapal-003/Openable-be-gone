@@ -1,4 +1,4 @@
-## Interface: 1101000
+## Interface: 110200
 ## Title: Openables be gone
 ## Notes: Automatically open all containers directly after looting them.
 ## Author: mrmaffen, Dapal-003
