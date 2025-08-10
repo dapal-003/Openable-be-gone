@@ -2,7 +2,7 @@
 ## Title: Openables be gone
 ## Notes: Automatically open all containers directly after looting them.
 ## Author: mrmaffen, Dapal-003
-## Version: 1.39
+## Version: 1.40
 ## SavedVariables: OpenableBeGoneDB
 
 embeds.xml
